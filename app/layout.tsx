@@ -5,6 +5,8 @@ import Header from "@/components/ui/common/header";
 import Footer from "@/components/ui/common/footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider";
+// import { LoadingProvider } from "@/components/loading-provider";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -21,13 +23,20 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider>
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
-      <body className={`${fontSans.className} font-sans antialiased`}>
+      <body className={`${fontSans.className} font-sans antialiased bg-background text-foreground`}>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+          {/* <LoadingProvider> */}
         <div className="flex flex-col min-h-screen">
-          <header className="relative z-10 ">
+          <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <Header />
           </header>
           <div>
@@ -38,6 +47,8 @@ export default function RootLayout({
           <Footer />
           </footer>
         </div>
+        {/* </LoadingProvider> */}
+        </ThemeProvider>
       </body>
     </html>
     </ClerkProvider>

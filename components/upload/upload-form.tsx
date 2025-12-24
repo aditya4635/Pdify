@@ -7,7 +7,7 @@ import { useUploadThing } from '@/utils/upload.thing';
 import { toast } from 'sonner';
 import {generatePdfSummary, storePdfSummary} from '@/actions/upload-actions';
 import { setMaxIdleHTTPParsers } from 'http';
-import Router from 'next/router';
+
 import { useRouter } from 'next/navigation';
 
 
@@ -38,7 +38,7 @@ export default function UploadForm() {
           });
         },
       });
-    
+    const router=useRouter();
     const handleSubmit =async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try{
@@ -46,7 +46,7 @@ export default function UploadForm() {
       
       const formData = new FormData(e.currentTarget);
       const file = formData.get('file') as File ;
-      const router=useRouter();
+      
   
   
       //validation of the fields

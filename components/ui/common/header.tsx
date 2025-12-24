@@ -4,39 +4,35 @@ import React from 'react'
 import { FileText } from 'lucide-react'
 
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
+import { ModeToggle } from '../mode-toggle';
 const Header = () => {
 
   return (
     
-    <nav className="flex justify-between py-6 px-8 items-center lg:px-8 font-sans" style={{ fontFamily: 'Inter, Segoe UI, sans-serif', fontWeight: 600, fontSize: '1.15rem' }}> 
+    <nav className="flex justify-between py-4 px-6 items-center lg:px-8 font-sans"> 
       <div className='flex items-center'>
-        <NavLink href="/" className='p-1 my-auto flex px-1 lg:px-2 !text-foreground font-bold text-xl' style={{ fontFamily: 'Inter, Segoe UI, sans-serif' }}>
-          <FileText size={24} className='!text-foreground hover:rotate-12 transform transition duration-200 ease-in-out'/>
-          <span className='!text-foreground font-bold ml-2'>Summy</span>
+        <NavLink href="/" className='p-1 my-auto flex px-1 lg:px-2 text-foreground font-bold text-xl hover:opacity-80 transition-opacity'>
+          <FileText size={24} className='text-primary hover:rotate-12 transform transition duration-200 ease-in-out'/>
+          <span className='ml-2'>Summy</span>
         </NavLink>
       </div>
       <div className='flex flex-col items-center justify-center'>
         <div className='flex space-x-8 items-center'>
-          <NavLink href="/#pricing" className='!text-foreground font-bold'>Pricing</NavLink>
+          <NavLink href="/#pricing" className='text-foreground/80 hover:text-foreground font-medium transition-colors'>Pricing</NavLink>
           <SignedIn>
-            <NavLink href="/dashboard" className='!text-foreground font-bold'>Your Summaries</NavLink>
+            <NavLink href="/dashboard" className='text-foreground/80 hover:text-foreground font-medium transition-colors'>Your Summaries</NavLink>
           </SignedIn>
         </div>
       </div>
-      <div>
+      <div className='flex items-center space-x-4'>
+        <ModeToggle />
         <SignedIn>
-          <div className='flex space-x-4 items-center justify-center'>
-            <NavLink href="/upload" className='!text-foreground font-bold'>Upload a PDF</NavLink>
-            <div className='!text-foreground font-bold'>PRO</div>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </div>
+          <NavLink href="/upload" className='text-foreground/80 hover:text-foreground font-medium transition-colors'>Upload a PDF</NavLink>
+          <div className='text-xs font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-primary to-purple-600 text-white'>PRO</div>
+          <UserButton afterSignOutUrl="/"/>
         </SignedIn>
         <SignedOut>
-          <div>
-            <NavLink href="/sign-in" className='!text-foreground font-bold'>Sign In</NavLink>
-          </div>
+          <NavLink href="/sign-in" className='text-foreground font-medium hover:text-primary transition-colors'>Sign In</NavLink>
         </SignedOut>
       </div>
     </nav>
