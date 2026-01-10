@@ -122,6 +122,11 @@
   }
   body {
     @apply bg-background text-foreground selection:bg-primary/20 selection:text-primary;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
   }
 }
 
