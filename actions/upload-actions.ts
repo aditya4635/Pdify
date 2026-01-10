@@ -7,7 +7,12 @@ import { formatFileNameAsTitle } from "@/utils/format-utils";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 interface pdfSummaries{
-    userId?:string,fileUrl:string,summary:string,title:string,fileName:string
+    userId?:string,
+    fileUrl:string,
+    summary:string,
+    title:string,
+    fileName:string,
+    cardData?:any
 };
 export async function generatePdfSummary(uploadResponse: Array<{
     
@@ -52,10 +57,10 @@ export async function generatePdfSummary(uploadResponse: Array<{
       const pdfText =  await fetchAndExtractPdfText(pdfUrl);
        console.log({pdfText});
 
-       let summary;
+       let summaryResult;
        try{
-        summary=await generateSummaryFromGemini(pdfText);
-        console.log({summary});
+        summaryResult = await generateSummaryFromGemini(pdfText);
+        console.log({summaryResult});
        }
        
        catch(geminierror){
@@ -63,7 +68,7 @@ export async function generatePdfSummary(uploadResponse: Array<{
         throw new Error('Gemini API failed to generate summary')
        }
 
-       if(!summary){
+       if(!summaryResult || !summaryResult.summaryText){
           return {
             success:false,
             message: 'failed to generate summary',
@@ -76,7 +81,8 @@ export async function generatePdfSummary(uploadResponse: Array<{
         message: 'Summary generated successfully',
         data:{
             title:formattedFileName,
-            summary,
+            summary: summaryResult.summaryText,
+            cardData: summaryResult.cardData,
         },
        };
 
@@ -92,29 +98,32 @@ export async function generatePdfSummary(uploadResponse: Array<{
 
    
 }
-async function savePdfSummary({userId,fileUrl,summary,title,fileName}:pdfSummaries){
+async function savePdfSummary({userId,fileUrl,summary,title,fileName,cardData}:pdfSummaries){
     //sql statement for inserting
     try{
         const sql=await getDbConnection();
-        await sql`INSERT INTO pdf_summaries (
+        const result = await sql`INSERT INTO pdf_summaries (
   user_id,
   original_file_url,
   summary_text,
   title,
-  file_name
+  file_name,
+  card_data
 )VALUES (
   ${userId},
   ${fileUrl},
   ${summary},
   ${title},
-  ${fileName}
-);`;
+  ${fileName},
+  ${cardData ? JSON.stringify(cardData) : null}
+) RETURNING *;`;
+        return result[0];
     }catch(error){
-        console.log('Error savinf the PDF',error);
+        console.log('Error saving the PDF',error);
         throw error;
     }
 }
-export async function storePdfSummary({userId,fileUrl,summary,title,fileName}:pdfSummaries){
+export async function storePdfSummary({userId,fileUrl,summary,title,fileName,cardData}:pdfSummaries){
 
     //user logged in
     //savepdfsummary
@@ -128,7 +137,7 @@ export async function storePdfSummary({userId,fileUrl,summary,title,fileName}:pd
                 message:'User not found',
             };
         }
-        savedSummary=await savePdfSummary({userId,fileUrl,summary,title,fileName});
+        savedSummary=await savePdfSummary({userId,fileUrl,summary,title,fileName,cardData});
         if(!savedSummary){
             return {
                 success:false,

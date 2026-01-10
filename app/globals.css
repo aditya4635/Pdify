@@ -160,3 +160,61 @@ header, footer {
 main {
   flex-grow: 1;
 }
+
+/* Hide Clerk development mode badge - multiple selectors for better coverage */
+.cl-internal-b3fm6y,
+[data-localization-key="badge__development"],
+.cl-badge,
+.cl-userButton-badge {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Hide any badge within Clerk components */
+.cl-rootBox [class*="badge"],
+.cl-userButtonPopoverCard [class*="badge"],
+.cl-card [class*="badge"] {
+  display: none !important;
+}
+
+/* Hide elements containing "Development" or "Secured by" text */
+.cl-footer,
+.cl-internal-1ta88jl {
+  display: none !important;
+}
+
+/* Additional Clerk custom styling */
+.cl-card {
+  animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Clerk form animations */
+.cl-formButtonPrimary {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cl-formButtonPrimary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.5);
+}
+
+/* Smooth input focus transitions */
+.cl-formFieldInput:focus {
+  transform: scale(1.01);
+}
+

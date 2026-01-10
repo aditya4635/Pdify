@@ -22,8 +22,8 @@ export default async function DashboardPage() {
       <div className="container mx-auto flex flex-col gap-4">
         <div className="flex flex-row justify-around mt-5">
           <div className="flex flex-col gap-4">
-            <h1 className="text-4xl">Your Summaries</h1>
-            <p>Transform your PDF into concise, actionable insigts</p>
+            <h1 className="text-4xl text-gray-900 dark:text-gray-100">Your Summaries</h1>
+            <p className="text-gray-700 dark:text-gray-300">Transform your PDF into concise, actionable insights</p>
           </div>
           <div>
             <Button
@@ -39,7 +39,7 @@ export default async function DashboardPage() {
         </div>
         <div className="mb-6">
           <div className="glass-card rounded-lg p-4">
-            <p className="text-sm">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
               {" "}
               You've reached the limit of your {uploadLimit} summaries for basic
               plan{" "}

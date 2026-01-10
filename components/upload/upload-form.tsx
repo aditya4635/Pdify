@@ -89,7 +89,7 @@ export default function UploadForm() {
 
           toast.success('Summary Saved');
           formRef.current?.reset();
-          router.push(`/summaries/${storeResult.id}`);
+          router.push(`/summaries/${storeResult.data.id}`);
         }
       }
     }
