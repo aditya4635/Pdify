@@ -6,7 +6,6 @@ import {z} from 'zod'
 import { useUploadThing } from '@/utils/upload.thing';
 import { toast } from 'sonner';
 import {generatePdfSummary, storePdfSummary} from '@/actions/upload-actions';
-import { setMaxIdleHTTPParsers } from 'http';
 
 import { useRouter } from 'next/navigation';
 
@@ -22,22 +21,22 @@ const schema = z.object({
 export default function UploadForm() {
     const [isLoading,setIsLoading]=useState(false);
     const formRef =useRef<HTMLFormElement>(null);
-    const { startUpload, routeConfig } = useUploadThing("pdfUploader", {
-        onClientUploadComplete: () => {
-          toast.dismiss("upload-toast");
-          toast.success("File uploaded successfully!");
-        },
-        onUploadError: (err) => {
-          toast.dismiss("upload-toast");
-          toast.error("Error occurred while uploading file. Please try again with another file.");
-        },
-        onUploadBegin: (file: string) => {
-          console.log("upload has begun for", file);
-          toast.loading("Uploading file. Please wait our AI is reading through your pdf...", {
-            id: "upload-toast"
-          });
-        },
+const { startUpload } = useUploadThing("pdfUploader", {
+    onClientUploadComplete: () => {
+      toast.dismiss("upload-toast");
+      toast.success("File uploaded successfully!");
+    },
+    onUploadError: () => {
+      toast.dismiss("upload-toast");
+      toast.error("Error occurred while uploading file. Please try again with another file.");
+    },
+    onUploadBegin: (file: string) => {
+      console.log("upload has begun for", file);
+      toast.loading("Uploading file. Please wait our AI is reading through your pdf...", {
+        id: "upload-toast"
       });
+    },
+  });
     const router=useRouter();
     const handleSubmit =async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -70,10 +69,11 @@ export default function UploadForm() {
   
       const result = await generatePdfSummary(resp.map(r=>r.serverData));
       
-      const {data=null, message=null} = result || {};
+      const {data=null} = result || {};
   
       if (data){
-        let storeResult:any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let storeResult: any;
         toast.loading(
           "Hang tight! we are saving..",
         );
@@ -84,7 +84,8 @@ export default function UploadForm() {
             fileUrl:resp[0].serverData.serverData.file.url,
             summary:data.summary,
             title:data.title,
-            fileName:file.name
+            fileName:file.name,
+            cardData: data.cardData
           });
 
           toast.success('Summary Saved');

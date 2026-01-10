@@ -1,64 +1,71 @@
 "use client";
 
 import { Card } from "../ui/card";
-import { FileText, Calendar } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { formatFileName } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { cn, formatFileName } from "@/lib/utils";
+import { formatDistanceToNow} from 'date-fns';
+import { FileText } from "lucide-react";
+import { Summary } from "@/types";
 
-const StatusBadge = ({ status }: { status: string }) => {
+const SummaryHeader = ({
+  fileUrl,
+  title,
+  createdAt,
+}: {
+  fileUrl: string;
+  title: string | null;
+  createdAt: string;
+}) => {
   return (
-    <motion.span
-      initial={{ scale: 0 }}
-      animate={{ scale: 1 }}
-      transition={{ delay: 0.3, type: "spring" }}
-      className={`px-3 py-1 text-xs font-medium rounded-full capitalize ${
-        status === "completed"
-          ? "bg-green-300 text-green-800"
-          : "bg-yellow-100 text-yellow-800"
-      }`}
-    >
-      {status}
-    </motion.span>
+    <div className="flex item-start gap-2 sm:gap-4">
+      <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-primary mt-1" />
+      <div className="flex-1 min-w-0">
+        <h3 className="text-base xl:text-lg font-semibold text-gray-900 dark:text-gray-200 truncate w-4/5">
+          {title || formatFileName(fileUrl)}
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-300">{formatDistanceToNow(new Date(createdAt),{addSuffix:true})}</p>
+      </div>
+    </div>
   );
 };
 
+
 interface Card1Props {
-  summary: any;
+  summary: Summary;
 }
 
 export default function Card1({ summary }: Card1Props) {
   // Check if we have structured card data
-  const hasCardData = summary.card_data?.card1;
+  const hasCardData = !!summary.card_data?.card1;
   
   // Use structured data if available
   let title = summary.title || formatFileName(summary.original_file_url);
   let subtitle = "";
   let overview = "";
-  let metadata: any[] = [];
+  
+  let metadata: Array<{ label: string; value: string }> = [];
   let status = summary.status || "completed";
 
-  if (hasCardData) {
+  if (hasCardData && summary.card_data?.card1) {
     const card1 = summary.card_data.card1;
     const sections = card1.sections || [];
     
     // Extract title section
-    const titleSection = sections.find((s: any) => s.type === "title");
-    if (titleSection) title = titleSection.content;
+    const titleSection = sections.find((s) => s.type === "title");
+    if (titleSection?.content) title = titleSection.content;
     
     // Extract subtitle
-    const subtitleSection = sections.find((s: any) => s.type === "subtitle");
-    if (subtitleSection) subtitle = subtitleSection.content;
+    const subtitleSection = sections.find((s) => s.type === "subtitle");
+    if (subtitleSection?.content) subtitle = subtitleSection.content;
     
     // Extract overview
-    const overviewSection = sections.find((s: any) => s.type === "overview");
-    if (overviewSection) overview = overviewSection.content;
+    const overviewSection = sections.find((s) => s.type === "overview");
+    if (overviewSection?.content) overview = overviewSection.content;
     
     // Extract metadata
-    const metadataSection = sections.find((s: any) => s.type === "metadata");
+    const metadataSection = sections.find((s) => s.type === "metadata");
     if (metadataSection) {
       metadata = metadataSection.items || [];
-      const statusItem = metadata.find((m: any) => m.label === "Status");
+      const statusItem = metadata.find((m) => m.label === "Status");
       if (statusItem) status = statusItem.value;
     }
   } else {
@@ -71,43 +78,39 @@ export default function Card1({ summary }: Card1Props) {
   return (
     <Card className="h-full max-h-[85vh] p-8 flex flex-col justify-between border-2 border-white/10 shadow-2xl backdrop-blur-sm overflow-hidden">
       {/* Header */}
-      <div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="flex items-start gap-4 mb-6"
-        >
-          <motion.div
-            whileHover={{ rotate: 360, scale: 1.1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <FileText className="w-12 h-12 text-primary flex-shrink-0" />
-          </motion.div>
-          <div className="flex-1">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-              {title}
-            </h2>
-            {subtitle && (
-              <p className="text-lg text-gray-700 dark:text-gray-300 mb-2">
-                {subtitle}
-              </p>
-            )}
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-              <Calendar className="w-4 h-4" />
-              <span>
-                {formatDistanceToNow(new Date(summary.created_at), {
-                  addSuffix: true,
-                })}
-              </span>
-            </div>
-          </div>
-        </motion.div>
+      <div className="space-y-6">
+        <SummaryHeader 
+          fileUrl={summary.original_file_url}
+          title={title}
+          createdAt={summary.created_at}
+        />
+        
+        {subtitle && (
+          <p className="text-sm font-medium text-primary/80 uppercase tracking-wider">
+            {subtitle}
+          </p>
+        )}
+      </div>
 
+      {/* Main Content - Overview */}
+      <div className="flex-1 overflow-y-auto my-6 pr-2 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
+        <div className="prose dark:prose-invert max-w-none">
+          <h4 className="text-xl font-bold mb-4 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+            Overview
+          </h4>
+          <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
+            {overview}
+          </p>
+        </div>
+      </div>
+
+      {/* Footer / Metadata */}
+      <div>
         {/* Metadata items */}
         {metadata.length > 0 && (
           <div className="mb-6 space-y-2">
-            {metadata.filter((m: any) => m.label !== "Status").map((item: any, idx: number) => (
+            
+            {metadata.filter((m) => m.label !== "Status").map((item, idx: number) => (
               <div key={idx} className="text-sm">
                 <span className="text-gray-600 dark:text-gray-400">{item.label}: </span>
                 <span className="text-gray-800 dark:text-gray-200 font-medium">{item.value}</span>
@@ -116,38 +119,30 @@ export default function Card1({ summary }: Card1Props) {
           </div>
         )}
 
-        {/* Status Badge */}
-        <div className="mb-6">
-          <StatusBadge status={status} />
-        </div>
 
-        {/* Overview */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2 }}
-          className="bg-gradient-to-br from-primary/10 to-purple-700/10 rounded-lg p-6 border border-white/10"
-        >
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
-            Overview
-          </h3>
-          <p className="text-gray-800 dark:text-gray-300 leading-relaxed">
-            {overview}
-          </p>
-        </motion.div>
+      
+        <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-800">
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Status</span>
+            <span className={cn(
+              "text-sm font-medium mt-1",
+              status.toLowerCase() === 'completed' ? "text-green-600 dark:text-green-400" : "text-yellow-600 dark:text-yellow-400"
+            )}>
+              {status}
+            </span>
+          </div>
+          <div className="text-right">
+             <span className="text-xs text-gray-400">Swipe for details →</span>
+          </div>
+        </div>
       </div>
 
       {/* Card Number */}
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
-        className="mt-6 text-center"
-      >
+      <div className="mt-6 text-center">
         <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/20 text-primary font-semibold">
           1
         </div>
-      </motion.div>
+      </div>
     </Card>
   );
 }

@@ -6,7 +6,7 @@ const f = createUploadthing();
 
 export const ourFileRouter={
     pdfUploader: f({ pdf :{maxFileSize:'32MB'}}).
-    middleware(async ({req: _req}) => {
+    middleware(async () => {
         //get userinfo
         const user = await currentUser();
         if(!user)

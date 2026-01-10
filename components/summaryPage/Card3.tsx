@@ -2,54 +2,54 @@
 
 import { Card } from "../ui/card";
 import { BookOpen } from "lucide-react";
+import { Summary, CardSection } from "@/types";
 
 interface Card3Props {
-  summary: any;
+  summary: Summary;
 }
 
 export default function Card3({ summary }: Card3Props) {
   // Check if we have structured card data
-  const hasCardData = summary.card_data?.card3;
+  const hasCardData = !!summary.card_data?.card3;
   
-  let sections: any[] = [];
+  let sections: CardSection[] = [];
   let description = "Detailed insights and analysis";
 
-  if (hasCardData) {
+  if (hasCardData && summary.card_data?.card3) {
     const card3 = summary.card_data.card3;
     sections = card3.sections || [];
     if (card3.description) description = card3.description;
   } else {
-    // Fallback: Use full summary text
+    // Fallback: Use full summary
     sections = [{
+      type: "full_content",
       heading: "Full Summary",
-      content: summary.summary_text || ""
+      content: summary.summary_text
     }];
   }
 
   return (
-    <Card className="h-full max-h-[85vh] p-8 flex flex-col border-2 border-white/10 shadow-2xl overflow-hidden">
+    <Card className="h-full max-h-[85vh] p-8 flex flex-col border-2 border-white/10 shadow-2xl backdrop-blur-sm overflow-hidden">
       {/* Header */}
-      <div className="mb-6 flex-shrink-0">
-        <div className="flex items-center gap-3 mb-4">
-          <BookOpen className="w-10 h-10 text-primary" />
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
-            Deep Dive
-          </h2>
+      <div className="flex items-center gap-3 mb-6 shrink-0">
+        <div className="p-3 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+          <BookOpen className="w-6 h-6" />
         </div>
-        <p className="text-gray-600 dark:text-gray-400">
-          {description}
-        </p>
+        <div>
+           <h3 className="text-xl font-bold text-gray-900 dark:text-white">Deep Dive</h3>
+           <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+        </div>
       </div>
 
-      {/* Content - Scrollable with max height */}
-      <div className="flex-1 overflow-y-auto pr-2 min-h-0 custom-scrollbar">
-        <div className="prose dark:prose-invert max-w-none space-y-6">
-          {sections.map((section: any, idx: number) => (
-            <div key={idx}>
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-blue-200 dark:scrollbar-thumb-blue-900">
+        <div className="space-y-8">
+          {sections.map((section, idx) => (
+            <div key={idx} className="prose dark:prose-invert max-w-none">
               {section.heading && (
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                <h4 className="text-lg font-semibold text-blue-600 dark:text-blue-400 mb-2">
                   {section.heading}
-                </h3>
+                </h4>
               )}
               {section.content && (
                 <p className="text-gray-800 dark:text-gray-300 text-base leading-relaxed whitespace-pre-wrap mb-4">
@@ -58,7 +58,7 @@ export default function Card3({ summary }: Card3Props) {
               )}
               {section.bullets && section.bullets.length > 0 && (
                 <ul className="space-y-2 ml-4">
-                  {section.bullets.map((bullet: string, bulletIdx: number) => (
+                  {section.bullets.map((bullet, bulletIdx) => (
                     <li key={bulletIdx} className="text-gray-800 dark:text-gray-300">
                       {bullet}
                     </li>
@@ -70,13 +70,8 @@ export default function Card3({ summary }: Card3Props) {
         </div>
       </div>
 
-      {/* Card Number */}
-      <div className="mt-6 pt-4 border-t border-white/10 flex-shrink-0">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/20 text-primary font-semibold">
-            3
-          </div>
-        </div>
+      <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-800 text-right shrink-0">
+          <span className="text-xs text-gray-400">Swipe for actions →</span>
       </div>
 
       <style jsx>{`

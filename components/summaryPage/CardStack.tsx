@@ -1,18 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 
+import { Summary } from "@/types";
+
 interface CardStackProps {
-  summary: any;
+  summary: Summary;
   children: React.ReactNode[];
 }
 
-export default function CardStack({ summary, children }: CardStackProps) {
+export default function CardStack({ children }: CardStackProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,6 +41,18 @@ export default function CardStack({ summary, children }: CardStackProps) {
     };
   }, []);
 
+  const paginate = useCallback((newDirection: number) => {
+    const newIndex = currentIndex + newDirection;
+    if (newIndex >= 0 && newIndex < totalCards) {
+      setDirection(newDirection);
+      setCurrentIndex(newIndex);
+    }
+  }, [currentIndex, totalCards]);
+
+  const handleClose = useCallback(() => {
+    router.push("/dashboard");
+  }, [router]);
+
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -49,17 +63,9 @@ export default function CardStack({ summary, children }: CardStackProps) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentIndex]);
+  }, [paginate, handleClose]);
 
-  const paginate = (newDirection: number) => {
-    const newIndex = currentIndex + newDirection;
-    if (newIndex >= 0 && newIndex < totalCards) {
-      setDirection(newDirection);
-      setCurrentIndex(newIndex);
-    }
-  };
-
-  const handleDragEnd = (event: any, info: PanInfo) => {
+  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const swipeThreshold = 50;
 
     if (info.offset.x > swipeThreshold && info.velocity.x > 0) {
@@ -67,10 +73,6 @@ export default function CardStack({ summary, children }: CardStackProps) {
     } else if (info.offset.x < -swipeThreshold && info.velocity.x < 0) {
       paginate(1);
     }
-  };
-
-  const handleClose = () => {
-    router.push("/dashboard");
   };
 
   const cardVariants = {

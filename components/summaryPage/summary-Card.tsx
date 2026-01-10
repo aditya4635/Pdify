@@ -4,7 +4,6 @@ import DeleteButton from "./delete-button";
 import { FileText } from "lucide-react";
 import { cn, formatFileName } from "@/lib/utils";
 import { formatDistanceToNow} from 'date-fns';
-import { formatFileNameAsTitle } from "@/utils/format-utils";
 const SummaryHeader = ({
   fileUrl,
   title,
@@ -29,7 +28,15 @@ const SummaryHeader = ({
 const StatusBadge=({status}:{status:string})=>{
     return <span className={cn('px-3 py-1 text-xs font-medium rounded-full capitalise',status==='completed'?'bg-green-300 text-green-800':'bg-yellow-100 text-yeelow-800')}>{status}</span>
 }
-export default function SummaryCard({ summary }: { summary: any }) {
+interface Summary {
+  id: string;
+  original_file_url: string;
+  title: string | null;
+  created_at: string;
+  summary_text: string;
+  status: string;
+}
+export default function SummaryCard({ summary }: { summary: Summary }) {
   return (
     <div className="group">
       <Card className="relative h-full transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/20 border-white/10">

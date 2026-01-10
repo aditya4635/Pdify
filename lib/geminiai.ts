@@ -58,9 +58,8 @@ return {
     summaryText: parsedData.summaryText || responseText,
 };
 
-}catch (error: any) {
-
+}catch (error: unknown) {
    console.error('Gemini API Error:', error);
-throw error;
- }
+   throw error;
+}
 };
