@@ -28,7 +28,7 @@ const Header = () => {
         <ModeToggle />
         <SignedIn>
           <NavLink href="/upload" className='text-foreground/80 hover:text-foreground font-medium transition-colors'>Upload a PDF</NavLink>
-          <div className='text-xs font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-primary to-purple-600 text-white'>PRO</div>
+          <div className='text-xs font-bold px-3 py-1 rounded-full bg-black text-white dark:bg-white dark:text-black'>PRO</div>
           <UserButton afterSignOutUrl="/"/>
         </SignedIn>
         <SignedOut>

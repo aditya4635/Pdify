@@ -1,7 +1,7 @@
 import { getSummaryById } from "@/lib/summaries";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import BgGradient from "@/components/ui/home/bg-gradient";
+
 import CardStack from "@/components/summaryPage/CardStack";
 import Card1 from "@/components/summaryPage/Card1";
 import Card2 from "@/components/summaryPage/Card2";
@@ -13,8 +13,7 @@ export default async function SummaryDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const user = await currentUser();
-  const userId = user?.id;
+  const { userId } = await auth();
 
   if (!userId) {
     return redirect("/sign-in");
@@ -29,7 +28,6 @@ export default async function SummaryDetailPage({
 
   return (
     <>
-      <BgGradient />
       <CardStack summary={summary}>
         <Card1 summary={summary} />
         <Card2 summary={summary} />

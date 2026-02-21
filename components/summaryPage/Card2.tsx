@@ -28,10 +28,10 @@ export default function Card2({ summary }: Card2Props) {
   }
 
   return (
-    <Card className="h-full max-h-[85vh] p-8 flex flex-col border-2 border-white/10 shadow-2xl backdrop-blur-sm overflow-hidden bg-gradient-to-br from-white/90 to-white/50 dark:from-gray-900/90 dark:to-gray-900/50">
+    <Card className="h-full max-h-[85vh] p-8 flex flex-col border-none shadow-none bg-white dark:bg-zinc-950 overflow-hidden rounded-[2rem]">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6 shrink-0">
-        <div className="p-3 rounded-xl bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+        <div className="p-3 rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300">
           <Sparkles className="w-6 h-6" />
         </div>
         <div>
@@ -41,12 +41,12 @@ export default function Card2({ summary }: Card2Props) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-200 dark:scrollbar-thumb-purple-900">
+      <div className="flex-1 overflow-y-auto pr-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {keyPoints.length > 0 ? (
           <div className="space-y-4">
              {keyPoints.map((point, idx) => (
-               <div key={idx} className="group flex items-start gap-4 p-4 rounded-xl bg-white/50 dark:bg-gray-800/50 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-colors border border-transparent hover:border-purple-100 dark:hover:border-purple-800/30">
-                 <CheckCircle2 className="w-5 h-5 text-purple-500 mt-1 shrink-0 group-hover:scale-110 transition-transform" />
+               <div key={idx} className="group flex items-start gap-4 p-4 rounded-xl bg-gray-50 dark:bg-zinc-900 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors border border-gray-100 dark:border-zinc-800">
+                 <CheckCircle2 className="w-5 h-5 text-gray-700 dark:text-gray-300 mt-1 shrink-0 group-hover:scale-110 transition-transform" />
                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base sm:text-lg">
                    {point}
                  </p>

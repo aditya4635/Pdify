@@ -5,8 +5,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <section className='min-h-screen'>
-    <BgGradient />
+    <section className='min-h-screen bg-white dark:bg-zinc-950'>
     <div className='mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8'>
       <div className='flex flex-col item-center justify-center'>
       <UploadHeader />

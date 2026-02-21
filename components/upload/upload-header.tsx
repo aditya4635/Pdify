@@ -5,15 +5,15 @@ export default function UploadHeader(){
 
     return(
     <div className='flex flex-col items-center justify-center gap-6 text-center'>
-        <div className='relative p-[1px] overflow-hidden rounded-full bg-gradient-to-r from-purple-200 via-primary to-purple-800 animate-gradient-x group'>
-        <Badge variant={'secondary'} className='relative px-6 py-2 text-base font-medium bg-white rounded-full group-hover:bg-gray-50 transition-colors'>
-            <Sparkles className='h-6 w-6 mr-2 text-primary animate-pulse'/>
-        <p className='text-base'>AI-powered content creation</p>
+        <div className='relative mt-12'>
+        <Badge className='relative px-6 py-2 text-sm font-semibold bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-gray-100 rounded-full hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors'>
+            <Sparkles className='h-5 w-5 mr-3 text-gray-900 dark:text-gray-100'/>
+        <p>AI-powered content creation</p>
         </Badge>
         </div>
-        <div className='capitalize text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl'>
-        <h1 className='text-primary pb-20 pt-12'>Start uploading your PDF </h1>
-        <p className='text-white '>Upload your PDF and we'll summarize it for you</p>
+        <div className='capitalize text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 mb-8'>
+        <h1 className='text-gray-900 dark:text-gray-100 mb-6'>Transform your PDF</h1>
+        <p className='text-xl text-gray-500 dark:text-gray-400 font-normal lowercase first-letter:capitalize'>Upload your document and we'll summarize it for you instantly.</p>
         </div>
       </div>)
 }

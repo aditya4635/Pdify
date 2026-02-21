@@ -33,10 +33,10 @@ export default function Card4({ summary }: Card4Props) {
   }
 
   return (
-    <Card className="h-full max-h-[85vh] p-8 flex flex-col justify-between border-2 border-white/10 shadow-2xl backdrop-blur-sm overflow-hidden bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-black">
+    <Card className="h-full max-h-[85vh] p-8 flex flex-col justify-between border-none shadow-none bg-white dark:bg-zinc-950 overflow-hidden rounded-[2rem]">
       {/* Header */}
       <div className="space-y-6">
-        <div className="flex items-center gap-2 text-primary mb-2">
+        <div className="flex items-center gap-2 text-gray-500 mb-2">
             <Info className="w-5 h-5" />
             <span className="text-sm font-semibold uppercase tracking-wider">Doument Info</span>
         </div>
@@ -58,10 +58,10 @@ export default function Card4({ summary }: Card4Props) {
                     Key Terms
                     <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 font-normal">{keyTerms.length}</span>
                 </h4>
-                <div className="grid grid-cols-1 gap-2 max-h-[150px] overflow-y-auto pr-2 scrollbar-thin">
+                <div className="grid grid-cols-1 gap-2 max-h-[150px] overflow-y-auto pr-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                     {keyTerms.map((term, idx) => (
                         <div key={idx} className="text-sm p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800">
-                            <span className="font-semibold text-primary">{term.term}: </span>
+                            <span className="font-semibold text-gray-900 dark:text-gray-100">{term.term}: </span>
                             <span className="text-gray-600 dark:text-gray-400">{term.definition}</span>
                         </div>
                     ))}
@@ -73,8 +73,8 @@ export default function Card4({ summary }: Card4Props) {
       {/* Bottom Line & Actions */}
       <div className="space-y-6 mt-6">
         {/* Bottom Line */}
-        <div className="p-4 rounded-xl bg-gradient-to-r from-primary/10 to-blue-500/10 border border-primary/20">
-            <h4 className="text-xs font-bold text-primary uppercase mb-1">The Bottom Line</h4>
+        <div className="p-4 rounded-xl bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800">
+            <h4 className="text-xs font-bold text-gray-900 dark:text-gray-100 uppercase mb-1">The Bottom Line</h4>
             <p className="text-sm text-gray-700 dark:text-gray-300 italic">
                 "{bottomLine}"
             </p>
@@ -113,7 +113,7 @@ export default function Card4({ summary }: Card4Props) {
 
       {/* Card Number */}
       <div className="mt-6 text-center">
-        <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/20 text-primary font-semibold">
+        <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-300 font-semibold">
           4
         </div>
       </div>

@@ -26,58 +26,36 @@ export default function RootLayout({
       appearance={{
         baseTheme: undefined,
         variables: {
-          colorPrimary: "#8b5cf6",
-          colorBackground: "transparent",
-          colorInputBackground: "rgba(255, 255, 255, 0.05)",
-          colorInputText: "#e5e7eb",
+          colorPrimary: "#000000", /* Clean black */
+          colorBackground: "white",
+          colorInputBackground: "transparent",
+          colorInputText: "#111827",
           borderRadius: "0.75rem",
           fontFamily: fontSans.style.fontFamily,
         },
         elements: {
-          // Main card with glassmorphism
-          card: "bg-black/40 backdrop-blur-xl border border-white/10 shadow-2xl",
-          
-          // Header styling
-          headerTitle: "text-gray-100 font-bold text-2xl",
-          headerSubtitle: "text-gray-400",
-          
-          // Form elements
+          card: "bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 shadow-2xl rounded-[2rem]",
+          headerTitle: "text-gray-900 dark:text-gray-100 font-extrabold text-2xl tracking-tight",
+          headerSubtitle: "text-gray-500 dark:text-gray-400 font-medium",
           formButtonPrimary: 
-            "bg-gradient-to-r from-primary to-purple-700 hover:from-purple-600 hover:to-purple-800 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-primary/50",
-          
+            "bg-black dark:bg-white text-white dark:text-black hover:bg-gray-900 dark:hover:bg-gray-100 transition-all font-bold duration-300 rounded-full h-12",
           formFieldInput: 
-            "bg-white/5 border-white/10 text-gray-100 focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all duration-300",
-          
-          formFieldLabel: "text-gray-300",
-          
-          // Footer links
-          footerActionLink: "text-primary hover:text-purple-400 transition-colors",
-          
-          // Social buttons
+            "bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-gray-100 focus:border-black dark:focus:border-white focus:ring-1 focus:ring-black dark:focus:ring-white transition-all duration-200 rounded-xl h-11 px-4",
+          formFieldLabel: "text-gray-700 dark:text-gray-300 font-semibold mb-1",
+          footerActionLink: "text-black dark:text-white font-bold hover:text-gray-700 transition-colors",
           socialButtonsBlockButton: 
-            "border-white/10 bg-white/5 hover:bg-white/10 transition-all duration-300 hover:scale-105",
-          
-          socialButtonsBlockButtonText: "text-gray-100",
-          
-          // Divider
-          dividerLine: "bg-white/10",
-          dividerText: "text-gray-400",
-          
-          // Input styling
-          formFieldInputShowPasswordButton: "text-gray-400 hover:text-gray-200",
-          
-          // Alert/Error styling
-          formFieldErrorText: "text-red-400",
-          
-          // Modal backdrop
-          modalBackdrop: "backdrop-blur-sm",
-          
-          // User button (if used)
-          userButtonPopoverCard: "bg-black/80 backdrop-blur-xl border border-white/10",
-          userButtonPopoverActionButton: "hover:bg-white/10 transition-all",
-          
-          // Animation classes
-          rootBox: "animate-in fade-in slide-in-from-bottom-4 duration-500",
+            "border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:bg-gray-50 dark:hover:bg-zinc-900 transition-all duration-300 rounded-xl h-12",
+          socialButtonsBlockButtonText: "text-gray-700 dark:text-gray-300 font-semibold",
+          dividerLine: "bg-gray-200 dark:bg-zinc-800",
+          dividerText: "text-gray-500 dark:text-gray-400 font-medium",
+          formFieldInputShowPasswordButton: "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200",
+          formFieldErrorText: "text-red-500 font-medium text-sm mt-1",
+          modalBackdrop: "bg-black/40 backdrop-blur-sm",
+          userButtonPopoverCard: "bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-2xl shadow-xl overflow-hidden",
+          userButtonPopoverActionButton: "hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors py-3 w-full text-left",
+          userButtonPopoverActionButtonText: "text-gray-700 dark:text-gray-300 font-medium",
+          userButtonPopoverActionButtonIcon: "text-gray-500 dark:text-gray-400",
+          userButtonPopoverFooter: "bg-gray-50 dark:bg-zinc-900/50",
         },
       }}
     >

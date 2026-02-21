@@ -2,7 +2,7 @@ import SummaryCard from "@/components/summaryPage/summary-Card";
 import { Button } from "@/components/ui/button";
 import BgGradient from "@/components/ui/home/bg-gradient";
 import { getSummaries } from "@/lib/summaries";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 
 import { ArrowRight, Plus } from "lucide-react";
 import Link from "next/link";
@@ -10,25 +10,24 @@ import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
   const uploadLimit = 5;
-  const user = await currentUser();
-  const userId = user?.id;
-  if (!user?.id) {
+  const { userId } = await auth();
+  if (!userId) {
     return redirect("/sign-in");
   }
   const summaries = await getSummaries(userId);
   return (
     <main className="min-h-screen">
-      <BgGradient />
-      <div className="container mx-auto flex flex-col gap-4">
-        <div className="flex flex-row justify-around mt-5">
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mt-8 mb-8">
           <div className="flex flex-col gap-4">
-            <h1 className="text-4xl text-gray-900 dark:text-gray-100">Your Summaries</h1>
+            <h1 className="text-4xl text-gray-900 dark:text-gray-100 font-bold tracking-tight">Your Summaries</h1>
             <p className="text-gray-700 dark:text-gray-300">Transform your PDF into concise, actionable insights</p>
           </div>
           <div>
             <Button
-              variant={"link"}
-              className="bg-gradient-to-r from-primary to-purple-700 hover:from-purple-600 hover:to-purple-800 hover:scale-105 transition-all duration-300 group hover:no-underline"
+              asChild
+              className="rounded-full px-6 bg-black hover:bg-black/90 text-white shadow-sm transition-transform hover:scale-105"
             >
               <Link href="/upload" className="flex items-center text-white">
                 <Plus className="w-5 h-5 mr-2"></Plus>

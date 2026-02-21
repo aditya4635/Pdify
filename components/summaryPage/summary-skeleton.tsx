@@ -2,7 +2,7 @@ import React from 'react';
 
 export function SummarySkeleton() {
   return (
-    <div className="glass-card relative h-full p-4 sm:p-6 animate-pulse">
+    <div className="bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-2xl relative h-full p-4 sm:p-6 animate-pulse">
       {/* Delete button skeleton */}
       <div className="absolute top-2 right-2 w-8 h-8 bg-muted rounded" />
       

@@ -29,10 +29,10 @@ export default function Card3({ summary }: Card3Props) {
   }
 
   return (
-    <Card className="h-full max-h-[85vh] p-8 flex flex-col border-2 border-white/10 shadow-2xl backdrop-blur-sm overflow-hidden">
+    <Card className="h-full max-h-[85vh] p-8 flex flex-col border-none shadow-none bg-white dark:bg-zinc-950 overflow-hidden rounded-[2rem]">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6 shrink-0">
-        <div className="p-3 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+        <div className="p-3 rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300">
           <BookOpen className="w-6 h-6" />
         </div>
         <div>
@@ -42,12 +42,12 @@ export default function Card3({ summary }: Card3Props) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-blue-200 dark:scrollbar-thumb-blue-900">
+      <div className="flex-1 overflow-y-auto pr-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="space-y-8">
           {sections.map((section, idx) => (
             <div key={idx} className="prose dark:prose-invert max-w-none">
               {section.heading && (
-                <h4 className="text-lg font-semibold text-blue-600 dark:text-blue-400 mb-2">
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                   {section.heading}
                 </h4>
               )}
@@ -74,22 +74,6 @@ export default function Card3({ summary }: Card3Props) {
           <span className="text-xs text-gray-400">Swipe for actions →</span>
       </div>
 
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(139, 92, 246, 0.5);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(139, 92, 246, 0.7);
-        }
-      `}</style>
     </Card>
   );
 }

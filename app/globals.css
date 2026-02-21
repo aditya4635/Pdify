@@ -46,73 +46,73 @@
 }
 
 :root {
-  --background: hsl(240 20% 98%);
+  --background: hsl(0 0% 100%);
   --foreground: hsl(240 10% 10%);
   --card: hsl(0 0% 100%);
   --card-foreground: hsl(240 10% 10%);
   --popover: hsl(0 0% 100%);
   --popover-foreground: hsl(240 10% 10%);
-  --primary: hsl(267 85% 58%);
-  --primary-foreground: hsl(0 0% 100%);
-  --secondary: hsl(240 20% 96%);
+  --primary: hsl(0 0% 9%); /* Clean black */
+  --primary-foreground: hsl(0 0% 98%);
+  --secondary: hsl(240 5% 96%); /* Light gray */
   --secondary-foreground: hsl(240 6% 10%);
-  --muted: hsl(240 20% 96%);
+  --muted: hsl(240 5% 96%);
   --muted-foreground: hsl(240 4% 46%);
-  --accent: hsl(267 70% 95%);
-  --accent-foreground: hsl(267 85% 35%);
+  --accent: hsl(240 5% 96%);
+  --accent-foreground: hsl(240 6% 10%);
   --destructive: hsl(0 84% 60%);
   --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(240 10% 88%);
-  --input: hsl(240 10% 94%);
-  --ring: hsl(267 85% 58%);
-  --radius: 0.75rem;
+  --border: hsl(240 6% 90%);
+  --input: hsl(240 6% 90%);
+  --ring: hsl(0 0% 9%);
+  --radius: 1rem; /* Softer radius typical of Airbnb */
   --chart-1: hsl(267 70% 60%);
   --chart-2: hsl(197 71% 52%);
   --chart-3: hsl(43 74% 60%);
   --chart-4: hsl(27 87% 65%);
   --chart-5: hsl(340 75% 60%);
-  --sidebar: hsl(240 20% 98%);
+  --sidebar: hsl(0 0% 100%);
   --sidebar-foreground: hsl(240 6% 25%);
-  --sidebar-primary: hsl(267 85% 58%);
+  --sidebar-primary: hsl(0 0% 9%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(267 70% 95%);
-  --sidebar-accent-foreground: hsl(267 85% 35%);
-  --sidebar-border: hsl(240 10% 92%);
-  --sidebar-ring: hsl(267 85% 58%);
+  --sidebar-accent: hsl(240 5% 96%);
+  --sidebar-accent-foreground: hsl(0 0% 9%);
+  --sidebar-border: hsl(240 6% 90%);
+  --sidebar-ring: hsl(0 0% 9%);
 }
 
 .dark {
-  --background: hsl(240 10% 3.9%);
+  --background: hsl(0 0% 3.9%); /* Pure dark matte */
   --foreground: hsl(0 0% 98%);
-  --card: hsl(240 10% 3.9%);
+  --card: hsl(0 0% 3.9%);
   --card-foreground: hsl(0 0% 98%);
-  --popover: hsl(240 10% 3.9%);
+  --popover: hsl(0 0% 3.9%);
   --popover-foreground: hsl(0 0% 98%);
-  --primary: hsl(267 100% 61%);
-  --primary-foreground: hsl(0 0% 98%);
-  --secondary: hsl(240 3.7% 15.9%);
+  --primary: hsl(0 0% 98%); /* White text */
+  --primary-foreground: hsl(0 0% 9%);
+  --secondary: hsl(0 0% 15%);
   --secondary-foreground: hsl(0 0% 98%);
-  --muted: hsl(240 3.7% 15.9%);
+  --muted: hsl(0 0% 15%);
   --muted-foreground: hsl(240 5% 64.9%);
-  --accent: hsl(240 3.7% 15.9%);
+  --accent: hsl(0 0% 15%);
   --accent-foreground: hsl(0 0% 98%);
   --destructive: hsl(0 62.8% 30.6%);
   --destructive-foreground: hsl(0 0% 98%);
-  --border: hsl(240 3.7% 15.9%);
-  --input: hsl(240 3.7% 15.9%);
-  --ring: hsl(267 100% 61%);
+  --border: hsl(0 0% 15%);
+  --input: hsl(0 0% 15%);
+  --ring: hsl(0 0% 83%);
   --chart-1: hsl(220 70% 50%);
   --chart-2: hsl(160 60% 45%);
   --chart-3: hsl(30 80% 55%);
   --chart-4: hsl(280 65% 60%);
   --chart-5: hsl(340 75% 55%);
-  --sidebar: hsl(240 5.9% 10%);
+  --sidebar: hsl(0 0% 3.9%);
   --sidebar-foreground: hsl(240 4.8% 95.9%);
   --sidebar-primary: hsl(224.3 76.3% 48%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent: hsl(0 0% 15%);
   --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-border: hsl(0 0% 15%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
@@ -132,15 +132,15 @@
 
 @layer utilities {
   .glass {
-    @apply bg-background/80 backdrop-blur-xl border border-border/40 supports-[backdrop-filter]:bg-background/80 shadow-sm;
+    @apply bg-background border border-border shadow-sm;
   }
   
   .glass-card {
-    @apply bg-card/70 backdrop-blur-lg border border-border/30 supports-[backdrop-filter]:bg-card/70 shadow-lg;
+    @apply bg-card border border-border/60 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] rounded-2xl;
   }
 
   .glass-hover {
-    @apply hover:bg-accent/60 hover:backdrop-blur-md transition-all duration-300;
+    @apply hover:bg-accent/40 transition-colors duration-300;
   }
 }
 

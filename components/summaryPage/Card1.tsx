@@ -76,7 +76,7 @@ export default function Card1({ summary }: Card1Props) {
   }
 
   return (
-    <Card className="h-full max-h-[85vh] p-8 flex flex-col justify-between border-2 border-white/10 shadow-2xl backdrop-blur-sm overflow-hidden">
+    <Card className="h-full max-h-[85vh] p-8 flex flex-col justify-between border-none shadow-none bg-white dark:bg-zinc-950 overflow-hidden rounded-[2rem]">
       {/* Header */}
       <div className="space-y-6">
         <SummaryHeader 
@@ -93,9 +93,9 @@ export default function Card1({ summary }: Card1Props) {
       </div>
 
       {/* Main Content - Overview */}
-      <div className="flex-1 overflow-y-auto my-6 pr-2 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
+      <div className="flex-1 overflow-y-auto my-6 pr-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="prose dark:prose-invert max-w-none">
-          <h4 className="text-xl font-bold mb-4 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+          <h4 className="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">
             Overview
           </h4>
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
@@ -139,7 +139,7 @@ export default function Card1({ summary }: Card1Props) {
 
       {/* Card Number */}
       <div className="mt-6 text-center">
-        <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary/20 text-primary font-semibold">
+        <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-300 font-semibold">
           1
         </div>
       </div>

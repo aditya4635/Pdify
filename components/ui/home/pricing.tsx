@@ -1,7 +1,10 @@
+"use client";
+
 import Link from 'next/link';
-import React from 'react'
+import React, { useState } from 'react'
 import {cn} from '@/lib/utils';
-import { ArrowRight, CheckIcon } from 'lucide-react';
+import { ArrowRight, CheckIcon, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 const plans=[{
     id:'basic',
     name:'Basic',
@@ -11,7 +14,7 @@ const plans=[{
         'email support',
     ],
     paymentLink:'',
-    priceId:'',
+    priceId:'plan_basic_replace_me',
     description:"for personal use ",
 },
 {
@@ -26,8 +29,29 @@ const plans=[{
         'markdown export',
     ],
     paymentLink:'',
-    priceId:'',
+    priceId:'plan_pro_replace_me',
 },];
+
+// Add Razorpay typing for window
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
+const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.onload = () => {
+            resolve(true);
+        };
+        script.onerror = () => {
+            resolve(false);
+        };
+        document.body.appendChild(script);
+    });
+};
 type PriceType={
     name:string;
     price:number;
@@ -45,40 +69,102 @@ const PricingCard = ({
     items,
     id,
     paymentLink,
+    priceId
 }:PriceType) => {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleCheckout = async () => {
+        try {
+            setIsLoading(true);
+
+            // Load Razorpay script
+            const res = await loadRazorpayScript();
+            if (!res) {
+                toast.error("Razorpay SDK failed to load. Are you online?");
+                setIsLoading(false);
+                return;
+            }
+
+            const response = await fetch('/api/razorpay/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ planId: priceId }),
+            });
+
+            if (!response.ok) {
+                if(response.status === 401) {
+                    toast.error("Please sign in to continue");
+                    return;
+                }
+                throw new Error("Checkout failed");
+            }
+
+            const data = await response.json();
+            
+            // Initialization options for Razorpay Checkout
+            const options = {
+                key: data.keyId,
+                subscription_id: data.subscriptionId,
+                name: "Adiya PDF Summaries",
+                description: `${name} Subscription`,
+                handler: function (response: any) {
+                    // This function fires upon successful payment
+                    toast.success("Payment successful! Welcome to the new plan!");
+                    // Optionally redirect or update user state
+                    window.location.href = "/dashboard";
+                },
+                theme: {
+                    color: "#000000",
+                },
+            };
+
+            const paymentObject = new window.Razorpay(options);
+            paymentObject.open();
+
+        } catch (error) {
+            console.error('Checkout error:', error);
+            toast.error("Failed to process checkout. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
    
-   <div className='relative w-full max-w-lg hover:scale-105 hover:transition-all duration-300 '>
-        
-        <div className={cn('flex flex-col justify-between items-center gap-4 lg:gap-8 z-10 p-8 rounded-xl border-[1px] border-border bg-card shadow-lg',id==='pro' && 'border-primary gap-5 border-2')}> 
-            <div className='flex flex-col justify-between items-center gap-4'>
-                <p className='text-lg lg:text-xl capitalize font-bold text-primary'>{name}
-
-                </p>
-                <p className='text-base mt-2 text-muted-foreground'>
+   <div className='relative w-full max-w-sm hover:-translate-y-2 hover:shadow-2xl transition-all duration-300'>
+        <div className={cn('flex flex-col h-full bg-white dark:bg-zinc-950 rounded-[2rem] p-8 border border-gray-200 dark:border-zinc-800', id==='pro' ? 'shadow-xl ring-2 ring-black dark:ring-white scale-105' : 'shadow-sm')}> 
+            <div className='flex flex-col gap-2 mb-6'>
+                <p className='text-xl capitalize font-extrabold text-gray-900 dark:text-white'>{name}</p>
+                <p className='text-sm text-gray-500 dark:text-gray-400 h-10'>
                 {description}
                 </p>
             </div>
         
-            <div className='flex gap-2'>
-            <p className='text-5xl tracking-tight font-extrabold text-foreground'>{price}</p>
-            <div className='flex flex-col justify-end mb-[4px]'>
-                <p className='text-xs uppercase font-semibold text-muted-foreground'>USD</p>
-                <p className='text-xs text-muted-foreground'>/month</p>
+            <div className='flex gap-2 mb-8'>
+                <p className='text-5xl tracking-tight font-extrabold text-gray-900 dark:text-white'>${price}</p>
+                <div className='flex flex-col justify-end mb-1'>
+                    <p className='text-sm text-gray-500 dark:text-gray-400'>/month</p>
                 </div>
             </div>
          
-            <div className='space-y-2.5 leading-relaxed text-base flex-1'>
-            {items.map((items,index)=> (
-                <li key={index} className='flex items-center gap-2 text-foreground'>
-                    <CheckIcon size={18} className='text-primary' />
-                    <span>{items}</span></li>
+            <ul className='space-y-4 flex-1 mb-8'>
+            {items.map((item, index)=> (
+                <li key={index} className='flex items-start gap-3 text-gray-700 dark:text-gray-300'>
+                    <CheckIcon size={20} className='text-gray-900 dark:text-white shrink-0 mt-0.5' />
+                    <span className="text-sm">{item}</span>
+                </li>
             ))}
-            </div>
-            <div className='space-y-2.5 flex justify-center w-full'>
-                <Link href={paymentLink} className={cn('w-full rounded-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-primary-foreground border-2 py-2',
-                id==='pro'? 'border-primary': 'border-border')}>Buy Now <ArrowRight size={18} />
-                </Link>
+            </ul>
+            <div className='flex justify-center w-full mt-auto'>
+                <button 
+                  onClick={handleCheckout} 
+                  disabled={isLoading}
+                  className={cn('w-full rounded-xl flex items-center justify-center gap-2 font-bold py-4 transition-colors',
+                id==='pro'? 'bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200': 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700', isLoading && 'opacity-70 cursor-not-allowed')}>
+                   {isLoading ? <><Loader2 size={18} className="animate-spin" /> Processing...</> : <>Buy Now <ArrowRight size={18} /></>}
+                </button>
             </div>
         </div>
     </div>
@@ -86,12 +172,13 @@ const PricingCard = ({
 };
 const Pricing = () => {
   return (
-    <section className='relative overflow-hidden bg-background' id='pricing'>
-        <div className='py-12 lg-py-24 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 lg:pt-12'> 
-        <div className='flex items-center justify-center w-full pb-12'>
-            <h2 className='uppercase font-bold text-xl mb-8 text-primary'>Pricing</h2>
+    <section className='relative overflow-hidden bg-white dark:bg-zinc-950 py-16 lg:py-24' id='pricing'>
+        <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'> 
+        <div className='flex flex-col items-center justify-center w-full pb-16 text-center'>
+            <h2 className='text-4xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100'>Simple, transparent pricing</h2>
+            <p className='mt-4 text-xl text-gray-600 dark:text-gray-400'>Choose the plan that's right for you</p>
         </div>
-        <div className='relative flex justify-center flex-col lg:flex-row items-center lg:item-stretch gap-8'>
+        <div className='relative flex flex-col lg:flex-row justify-center items-stretch gap-8 max-w-4xl mx-auto'>
            {plans.map((plan) => (
             <PricingCard key={plan.id} {...plan} />
             ))}

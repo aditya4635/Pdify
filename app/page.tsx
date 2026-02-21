@@ -7,8 +7,7 @@ import Ctasection from "@/components/ui/home/ctasection";
 import React from "react";
 export default function Home() {
   return (
-   <div className="relative w-full ">
-      <BgGradient/>
+   <div className="relative w-full bg-white dark:bg-zinc-950">
       <div className="flex flex-col items-center justify-center ">
       <Hero />
       <Demo / >

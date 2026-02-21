@@ -17,7 +17,7 @@ const SummaryHeader = ({
     <div className="flex item-start gap-2 sm:gap-4">
       <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-primary mt-1" />
       <div className="flex-1 min-w-0">
-        <h3 className="text-base xl:text-lg font-semibold text-gray-900 dark:text-gray-200 truncate w-4/5">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 truncate w-4/5 leading-tight">
           {title || formatFileName(fileUrl)}
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-300">{formatDistanceToNow(new Date(createdAt),{addSuffix:true})}</p>
@@ -39,7 +39,7 @@ interface Summary {
 export default function SummaryCard({ summary }: { summary: Summary }) {
   return (
     <div className="group">
-      <Card className="relative h-full transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/20 border-white/10">
+      <Card className="relative h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-2xl">
         <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
           <DeleteButton summaryId={summary.id} />
         </div >
