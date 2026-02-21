@@ -1,10 +1,7 @@
-"use client";
-
 import Link from 'next/link';
-import React, { useState } from 'react'
+import React from 'react'
 import {cn} from '@/lib/utils';
-import { ArrowRight, CheckIcon, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { ArrowRight, CheckIcon } from 'lucide-react';
 const plans=[{
     id:'basic',
     name:'Basic',
@@ -32,26 +29,7 @@ const plans=[{
     priceId:'plan_pro_replace_me',
 },];
 
-// Add Razorpay typing for window
-declare global {
-  interface Window {
-    Razorpay: any;
-  }
-}
 
-const loadRazorpayScript = () => {
-    return new Promise((resolve) => {
-        const script = document.createElement("script");
-        script.src = "https://checkout.razorpay.com/v1/checkout.js";
-        script.onload = () => {
-            resolve(true);
-        };
-        script.onerror = () => {
-            resolve(false);
-        };
-        document.body.appendChild(script);
-    });
-};
 type PriceType={
     name:string;
     price:number;
@@ -69,68 +47,7 @@ const PricingCard = ({
     items,
     id,
     paymentLink,
-    priceId
 }:PriceType) => {
-    const [isLoading, setIsLoading] = useState(false);
-
-    const handleCheckout = async () => {
-        try {
-            setIsLoading(true);
-
-            // Load Razorpay script
-            const res = await loadRazorpayScript();
-            if (!res) {
-                toast.error("Razorpay SDK failed to load. Are you online?");
-                setIsLoading(false);
-                return;
-            }
-
-            const response = await fetch('/api/razorpay/checkout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ planId: priceId }),
-            });
-
-            if (!response.ok) {
-                if(response.status === 401) {
-                    toast.error("Please sign in to continue");
-                    return;
-                }
-                throw new Error("Checkout failed");
-            }
-
-            const data = await response.json();
-            
-            // Initialization options for Razorpay Checkout
-            const options = {
-                key: data.keyId,
-                subscription_id: data.subscriptionId,
-                name: "Adiya PDF Summaries",
-                description: `${name} Subscription`,
-                handler: function (response: any) {
-                    // This function fires upon successful payment
-                    toast.success("Payment successful! Welcome to the new plan!");
-                    // Optionally redirect or update user state
-                    window.location.href = "/dashboard";
-                },
-                theme: {
-                    color: "#000000",
-                },
-            };
-
-            const paymentObject = new window.Razorpay(options);
-            paymentObject.open();
-
-        } catch (error) {
-            console.error('Checkout error:', error);
-            toast.error("Failed to process checkout. Please try again.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     return (
    
    <div className='relative w-full max-w-sm hover:-translate-y-2 hover:shadow-2xl transition-all duration-300'>
@@ -158,13 +75,9 @@ const PricingCard = ({
             ))}
             </ul>
             <div className='flex justify-center w-full mt-auto'>
-                <button 
-                  onClick={handleCheckout} 
-                  disabled={isLoading}
-                  className={cn('w-full rounded-xl flex items-center justify-center gap-2 font-bold py-4 transition-colors',
-                id==='pro'? 'bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200': 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700', isLoading && 'opacity-70 cursor-not-allowed')}>
-                   {isLoading ? <><Loader2 size={18} className="animate-spin" /> Processing...</> : <>Buy Now <ArrowRight size={18} /></>}
-                </button>
+                <Link href="/" className={cn('w-full rounded-xl flex items-center justify-center gap-2 font-bold py-4 transition-colors',
+                id==='pro'? 'bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200': 'bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700')}>Buy Now <ArrowRight size={18} />
+                </Link>
             </div>
         </div>
     </div>
