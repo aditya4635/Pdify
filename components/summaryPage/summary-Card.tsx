@@ -26,7 +26,7 @@ const SummaryHeader = ({
   );
 };
 const StatusBadge=({status}:{status:string})=>{
-    return <span className={cn('px-3 py-1 text-xs font-medium rounded-full capitalise',status==='completed'?'bg-green-300 text-green-800':'bg-yellow-100 text-yeelow-800')}>{status}</span>
+    return <span className={cn('px-3 py-1 text-xs font-medium rounded-full capitalize', status === 'completed' ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'bg-gray-200 text-gray-700 dark:bg-zinc-700 dark:text-gray-300')}>{status}</span>
 }
 interface Summary {
   id: string;

@@ -8,7 +8,7 @@ const Demo = () => {
         <div className='flex flex-col items-center justify-center space-y-6 mx-auto'>
           <Pizza className='h-8 w-8 text-black dark:text-white'/>
           <h1 className='text-3xl md:text-5xl text-gray-900 dark:text-gray-100 font-extrabold text-center tracking-tight leading-tight'>
-            Watch how Summy transforms <br className="hidden md:block" />
+            Watch how Pdify transforms <br className="hidden md:block" />
             <span className='text-gray-500 line-through decoration-2'>this next js pdf</span> into an easy to read summary
           </h1>
         </div>

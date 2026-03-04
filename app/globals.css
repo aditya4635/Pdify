@@ -60,8 +60,8 @@
   --muted-foreground: hsl(240 4% 46%);
   --accent: hsl(240 5% 96%);
   --accent-foreground: hsl(240 6% 10%);
-  --destructive: hsl(0 84% 60%);
-  --destructive-foreground: hsl(0 0% 100%);
+  --destructive: hsl(0 0% 20%); /* charcoal — no red in theme */
+  --destructive-foreground: hsl(0 0% 98%);
   --border: hsl(240 6% 90%);
   --input: hsl(240 6% 90%);
   --ring: hsl(0 0% 9%);
@@ -96,7 +96,7 @@
   --muted-foreground: hsl(240 5% 64.9%);
   --accent: hsl(0 0% 15%);
   --accent-foreground: hsl(0 0% 98%);
-  --destructive: hsl(0 62.8% 30.6%);
+  --destructive: hsl(0 0% 30%); /* dark charcoal — no red in dark theme */
   --destructive-foreground: hsl(0 0% 98%);
   --border: hsl(0 0% 15%);
   --input: hsl(0 0% 15%);
@@ -150,6 +150,31 @@ body, html {
   box-sizing: border-box;
   height: 100%;
   width: 100%;
+  scroll-behavior: smooth;
+}
+
+/* ─── Reusable animation utilities ─────────────────────────── */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-slide-up {
+  animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-slide-up-delay-1 {
+  animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+.animate-fade-slide-up-delay-2 {
+  animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
 }
 
 #root {

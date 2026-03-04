@@ -52,3 +52,19 @@ export interface Summary {
   file_name?: string;
   card_data?: CardData;
 }
+
+export type UserPlan = 'free' | 'basic' | 'pro';
+
+export interface UserPlanInfo {
+  plan: UserPlan;
+  summariesUsed: number;
+  limit: number;
+  isOverLimit: boolean;
+}
+
+
+export const PLAN_LIMITS: Record<UserPlan, number> = {
+  free: 1,
+  basic: 5,
+  pro: Infinity,
+};

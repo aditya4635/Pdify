@@ -1,115 +1,103 @@
 "use client";
 
-import React, { useRef, useState } from 'react'
-import UploadFormInput from './upload-form-input'
-import {z} from 'zod'
-import { useUploadThing } from '@/utils/upload.thing';
-import { toast } from 'sonner';
-import {generatePdfSummary, storePdfSummary} from '@/actions/upload-actions';
+import React, { useRef, useState } from "react";
+import { z } from "zod";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useUploadThing } from "@/utils/upload.thing";
+import { generatePdfSummary, storePdfSummary } from "@/actions/upload-actions";
+import UploadFormInput from "./upload-form-input";
 
-import { useRouter } from 'next/navigation';
-
-
-const schema = z.object({
-    file: z
-    .instanceof(File,{message: 'Invalid file'})
-    .refine((file) => file.size <= 24*1024*1024,  'File size must be less than 20MB ')
-    .refine((file) => file.type.startsWith('application/pdf'), 'File must be a PDF')
+const fileSchema = z.object({
+  file: z
+    .instanceof(File, { message: "Invalid file" })
+    .refine((f) => f.size <= 24 * 1024 * 1024, "File must be under 24 MB")
+    .refine((f) => f.type === "application/pdf", "Only PDF files are supported"),
 });
 
-
 export default function UploadForm() {
-    const [isLoading,setIsLoading]=useState(false);
-    const formRef =useRef<HTMLFormElement>(null);
-const { startUpload } = useUploadThing("pdfUploader", {
+  const [isLoading, setIsLoading] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
+
+  const { startUpload } = useUploadThing("pdfUploader", {
     onClientUploadComplete: () => {
-      toast.dismiss("upload-toast");
-      toast.success("File uploaded successfully!");
+      toast.dismiss("upload");
+      toast.success("File uploaded.");
     },
-    onUploadError: () => {
-      toast.dismiss("upload-toast");
-      toast.error("Error occurred while uploading file. Please try again with another file.");
+    onUploadError: (err) => {
+      toast.dismiss("upload");
+      const isLimitError = err.message?.toLowerCase().includes("limit");
+      toast.error(isLimitError ? "Plan limit reached. Please upgrade." : "Upload failed. Please try again.");
     },
-    onUploadBegin: (file: string) => {
-      console.log("upload has begun for", file);
-      toast.loading("Uploading file. Please wait our AI is reading through your pdf...", {
-        id: "upload-toast"
-      });
+    onUploadBegin: () => {
+      toast.loading("Uploading — our AI is reading your PDF…", { id: "upload" });
     },
   });
-    const router=useRouter();
-    const handleSubmit =async (e: React.FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try{
-      setIsLoading(true);
-      
-      const formData = new FormData(e.currentTarget);
-      const file = formData.get('file') as File ;
-      
-  
-  
-      //validation of the fields
-      const validatedFields = schema.safeParse({ file });
-  
-      if (!validatedFields.success) {
-      toast(validatedFields.error.errors[0].message);
-      setIsLoading(false);
-      return;
-      }
-      //upload the pdf to upload pdf
-      const resp = await startUpload([file])
-      if (!resp || resp.length === 0) {
-        toast.error('Error uploading file. Please try again with another file.')
-        setIsLoading(false);
+    setIsLoading(true);
+
+    try {
+      const file = new FormData(e.currentTarget).get("file") as File;
+      const validated = fileSchema.safeParse({ file });
+
+      if (!validated.success) {
+        toast.error(validated.error.errors[0].message);
         return;
       }
-      
-      console.log('Upload response:', resp);
-      //parse the pdf using langchain 
-  
-      const result = await generatePdfSummary(resp.map(r=>r.serverData));
-      
-      const {data=null} = result || {};
-  
-      if (data){
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let storeResult: any;
-        toast.loading(
-          "Hang tight! we are saving..",
-        );
-  
-        
-        if(data.summary){
-          storeResult=await storePdfSummary({
-            fileUrl:resp[0].serverData.serverData.file.url,
-            summary:data.summary,
-            title:data.title,
-            fileName:file.name,
-            cardData: data.cardData
-          });
 
-          toast.success('Summary Saved');
-          formRef.current?.reset();
-          router.push(`/summaries/${storeResult.data.id}`);
-        }
+      const uploaded = await startUpload([file]);
+      if (!uploaded?.length) {
+        toast.error("Upload failed. Please try again.");
+        return;
       }
-    }
-    catch(error){
-      setIsLoading(false);
-      console.error('error occured',error);
-      formRef.current?.reset();
-    }finally{
-      setIsLoading(false);
-    }
-    
-    //summarise the pdf
-    // save the summary to the database
-    //redirect to the [id] summary page
-};
-    return (
 
-    <div className='flex flex-col items-center justify-center w-full max-w-2xl mx-auto'>
-    <UploadFormInput isLoading={isLoading} ref={formRef} onSubmit={handleSubmit} />
+      const summaryResult = await generatePdfSummary(
+        uploaded.map((r) => ({ serverData: r.serverData }))
+      );
+
+      if (!summaryResult.data?.summary) {
+        toast.error(summaryResult.error ?? "Failed to generate summary. Please try again.");
+        return;
+      }
+
+      toast.loading("Saving summary…", { id: "save" });
+
+      const storeResult = await storePdfSummary({
+        fileUrl: uploaded[0].serverData.file.url,
+        summary: summaryResult.data.summary,
+        title: summaryResult.data.title,
+        fileName: file.name,
+        cardData: summaryResult.data.cardData,
+      });
+
+      toast.dismiss("save");
+
+      if (!storeResult.success) {
+        if ("code" in storeResult && storeResult.code === "LIMIT_REACHED") {
+          toast.error(storeResult.message ?? "Plan limit reached.");
+          router.refresh();
+        } else {
+          toast.error(storeResult.message ?? "Failed to save summary.");
+        }
+        return;
+      }
+
+      toast.success("Summary saved!");
+      formRef.current?.reset();
+      router.push(`/summaries/${storeResult.data!.id}`);
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto">
+      <UploadFormInput isLoading={isLoading} ref={formRef} onSubmit={handleSubmit} />
     </div>
   );
 }
