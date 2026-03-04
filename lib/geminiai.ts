@@ -15,8 +15,13 @@ function stripMarkdownFences(text: string): string {
 
 export async function generateSummaryFromGemini(pdfText: string) {
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash-exp",
-    generationConfig: { temperature: 0.7, maxOutputTokens: 4000 },
+    model: "gemini-2.5-flash",
+    // Force the model to return valid JSON
+    generationConfig: { 
+      temperature: 0.7, 
+      maxOutputTokens: 8192,
+      responseMimeType: "application/json",
+    },
   });
 
   const result = await model.generateContent({
@@ -39,7 +44,8 @@ export async function generateSummaryFromGemini(pdfText: string) {
   let parsed: Record<string, unknown>;
   try {
     parsed = JSON.parse(cleaned);
-  } catch {
+  } catch (error) {
+    console.error("Failed to parse Gemini response:", { rawText, cleaned, error });
     throw new Error("Gemini returned invalid JSON");
   }
 

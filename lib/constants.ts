@@ -31,7 +31,7 @@ export const PLANS: PriceType[] = [
   },
   {
     name: "Basic",
-    price: "$9.99",
+    price: "9.99",
     features: [
       "10 Summaries per month",
       "Advanced AI features",
@@ -45,7 +45,7 @@ export const PLANS: PriceType[] = [
   },
   {
     name: "Pro",
-    price: "$29.99",
+    price: "29.99",
     features: [
       "50 Summaries per month",
       "Priority AI Processing",

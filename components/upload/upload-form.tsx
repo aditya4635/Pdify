@@ -8,17 +8,20 @@ import { useUploadThing } from "@/utils/upload.thing";
 import { generatePdfSummary, storePdfSummary } from "@/actions/upload-actions";
 import UploadFormInput from "./upload-form-input";
 
-const fileSchema = z.object({
-  file: z
-    .instanceof(File, { message: "Invalid file" })
-    .refine((f) => f.size <= 24 * 1024 * 1024, "File must be under 24 MB")
-    .refine((f) => f.type === "application/pdf", "Only PDF files are supported"),
-});
+// Remove the global fileSchema since it's now dynamic
 
-export default function UploadForm() {
+export default function UploadForm({ maxFileSizeMB }: { maxFileSizeMB: number }) {
   const [isLoading, setIsLoading] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
+
+  // Create schema inside component to use the dynamic prop
+  const fileSchema = z.object({
+    file: z
+      .instanceof(File, { message: "Invalid file" })
+      .refine((f) => f.size <= maxFileSizeMB * 1024 * 1024, `File must be under ${maxFileSizeMB} MB`)
+      .refine((f) => f.type === "application/pdf", "Only PDF files are supported"),
+  });
 
   const { startUpload } = useUploadThing("pdfUploader", {
     onClientUploadComplete: () => {
