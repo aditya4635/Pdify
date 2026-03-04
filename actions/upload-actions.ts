@@ -1,166 +1,99 @@
 "use server";
 
-import { getDbConnection } from "@/lib/db";
+import { auth } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 import { generateSummaryFromGemini } from "@/lib/geminiai";
 import { fetchAndExtractPdfText } from "@/lib/langchain";
 import { formatFileNameAsTitle } from "@/utils/format-utils";
-import { auth } from "@clerk/nextjs/server";
-import { revalidatePath } from "next/cache";
-interface pdfSummaries{
-    userId?:string,
-    fileUrl:string,
-    summary:string,
-    title:string,
-    fileName:string,
-    cardData?:any
+import { getUserPlanInfo, incrementSummaryUsage } from "@/lib/user";
+import { getDbConnection } from "@/lib/db";
+
+type UploadedFile = {
+  serverData: {
+    userId: string;
+    file: { url: string; name: string };
+  };
 };
-export async function generatePdfSummary(uploadResponse: Array<{
-    
-        serverData: {
-            userId: string;
-            file: {
-                url: string;
-                name: string;
-            };
-        };
-    
-}>)
-    {
-        if (!uploadResponse) {
-            return{
-            success: false,
-            error: 'Error uploading file. Please try again with another file.',
-            data: null
-            };
-                             }
 
-        const {
-            serverData: {
-                    userId,
-                    file: {
-                        url:pdfUrl,
-                        name:fileName
-                    },
-                },
-            
-        } = uploadResponse[0];
+type StoreSummaryInput = {
+  fileUrl: string;
+  summary: string;
+  title: string;
+  fileName: string;
+  cardData?: unknown;
+};
 
-    if (!pdfUrl ) {
-        return{
-            success: false,
-            error: 'Error uploading file. Please try again with another file.',
-            data: null
-        };
-        }
-
-    try{
-      const pdfText =  await fetchAndExtractPdfText(pdfUrl);
-       console.log({pdfText});
-
-       let summaryResult;
-       try{
-        summaryResult = await generateSummaryFromGemini(pdfText);
-        console.log({summaryResult});
-       }
-       
-       catch(geminierror){
-        console.error('gemini API failed',geminierror);
-        throw new Error('Gemini API failed to generate summary')
-       }
-
-       if(!summaryResult || !summaryResult.summaryText){
-          return {
-            success:false,
-            message: 'failed to generate summary',
-            data:null,
-          };
-       }
-       const formattedFileName =formatFileNameAsTitle(fileName);
-       return {
-        success:true,
-        message: 'Summary generated successfully',
-        data:{
-            title:formattedFileName,
-            summary: summaryResult.summaryText,
-            cardData: summaryResult.cardData,
-        },
-       };
-
-
-    }catch(err){
-        return{
-            success: false,
-            error: 'Error uploading file. Please try again with another file.',
-            data: null
-        };
-        
-    }
-
-   
+async function saveSummaryToDb(userId: string, input: StoreSummaryInput) {
+  const sql = await getDbConnection();
+  const rows = await sql`
+    INSERT INTO pdf_summaries (user_id, original_file_url, summary_text, title, file_name, card_data)
+    VALUES (
+      ${userId},
+      ${input.fileUrl},
+      ${input.summary},
+      ${input.title},
+      ${input.fileName},
+      ${input.cardData ? JSON.stringify(input.cardData) : null}
+    )
+    RETURNING *
+  `;
+  return rows[0] as { id: string };
 }
-async function savePdfSummary({userId,fileUrl,summary,title,fileName,cardData}:pdfSummaries){
-    //sql statement for inserting
-    try{
-        const sql=await getDbConnection();
-        const result = await sql`INSERT INTO pdf_summaries (
-  user_id,
-  original_file_url,
-  summary_text,
-  title,
-  file_name,
-  card_data
-)VALUES (
-  ${userId},
-  ${fileUrl},
-  ${summary},
-  ${title},
-  ${fileName},
-  ${cardData ? JSON.stringify(cardData) : null}
-) RETURNING *;`;
-        return result[0];
-    }catch(error){
-        console.log('Error saving the PDF',error);
-        throw error;
-    }
+
+export async function generatePdfSummary(uploadResponse: UploadedFile[]) {
+  if (!uploadResponse?.length) {
+    return { success: false, error: "No file provided.", data: null };
+  }
+
+  const { serverData: { file: { url: pdfUrl, name: fileName } } } = uploadResponse[0];
+
+  if (!pdfUrl) {
+    return { success: false, error: "File URL is missing.", data: null };
+  }
+
+  try {
+    const pdfText = await fetchAndExtractPdfText(pdfUrl);
+    const result = await generateSummaryFromGemini(pdfText);
+
+    return {
+      success: true,
+      data: {
+        title: formatFileNameAsTitle(fileName),
+        summary: result.summaryText,
+        cardData: result.cardData,
+      },
+    };
+  } catch {
+    return { success: false, error: "Failed to process the PDF. Please try again.", data: null };
+  }
 }
-export async function storePdfSummary({userId,fileUrl,summary,title,fileName,cardData}:pdfSummaries){
 
-    //user logged in
-    //savepdfsummary
+export async function storePdfSummary(input: StoreSummaryInput) {
+  const { userId } = await auth();
 
-    let savedSummary:any;
-    try{
-        const {userId} =await auth();
-        if(!userId){
-            return {
-                success:false,
-                message:'User not found',
-            };
-        }
-        savedSummary=await savePdfSummary({userId,fileUrl,summary,title,fileName,cardData});
-        if(!savedSummary){
-            return {
-                success:false,
-                message:'Please try again, failed to save summary',
-            };
-        }
+  if (!userId) {
+    return { success: false, message: "Not authenticated." };
+  }
 
+  const planInfo = await getUserPlanInfo(userId);
+  if (planInfo.isOverLimit) {
+    return {
+      success: false,
+      code: "LIMIT_REACHED" as const,
+      message: `You've used all ${planInfo.limit} ${planInfo.limit === 1 ? "summary" : "summaries"} on the ${planInfo.plan} plan. Please upgrade to continue.`,
+    };
+  }
 
-        
-    } catch(error){
-        return {
-            success: false,
-            message: error instanceof Error? error.message:'Error saving the PDF',
-        }
-    }
-
-    //revalidate the cache
-    revalidatePath(`/summaries/${savedSummary.id}`);
-    return{
-        success:true,
-        message:'successfully saved summary',
-        data:{
-            id:savedSummary.id,
-        }
-    }
+  try {
+    const saved = await saveSummaryToDb(userId, input);
+    await incrementSummaryUsage(userId);
+    revalidatePath(`/summaries/${saved.id}`);
+    revalidatePath("/dashboard");
+    return { success: true, data: { id: saved.id } };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to save summary.",
+    };
+  }
 }

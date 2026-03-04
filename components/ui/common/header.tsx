@@ -13,7 +13,7 @@ const Header = () => {
       <div className='flex items-center'>
         <NavLink href="/" className='p-1 my-auto flex px-1 lg:px-2 text-foreground font-bold text-xl hover:opacity-80 transition-opacity'>
           <FileText size={24} className='text-primary hover:rotate-12 transform transition duration-200 ease-in-out'/>
-          <span className='ml-2'>Summy</span>
+          <span className='ml-2'>Pdify</span>
         </NavLink>
       </div>
       <div className='flex flex-col items-center justify-center'>

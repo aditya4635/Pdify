@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Source_Sans_3 as FontSans } from "next/font/google";
+import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/ui/common/header";
 import Footer from "@/components/ui/common/footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
-// import { LoadingProvider } from "@/components/loading-provider";
+import { syncUserAction } from "@/actions/user-actions";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -14,19 +14,20 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-  title: "Adiya | PDF Summary Generator",
-  description: "Easily generate PDF summaries with Adiya.",
+  title: "Pdify | AI PDF Summarizer",
+  description: "Transform any PDF into concise summaries instantly with Pdify.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  await syncUserAction();
   return (
     <ClerkProvider
       appearance={{
         baseTheme: undefined,
         variables: {
-          colorPrimary: "#000000", /* Clean black */
+          colorPrimary: "#000000",
           colorBackground: "white",
           colorInputBackground: "transparent",
           colorInputText: "#111827",
@@ -49,7 +50,7 @@ export default function RootLayout({
           dividerLine: "bg-gray-200 dark:bg-zinc-800",
           dividerText: "text-gray-500 dark:text-gray-400 font-medium",
           formFieldInputShowPasswordButton: "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200",
-          formFieldErrorText: "text-red-500 font-medium text-sm mt-1",
+          formFieldErrorText: "text-foreground/70 font-medium text-sm mt-1",
           modalBackdrop: "bg-black/40 backdrop-blur-sm",
           userButtonPopoverCard: "bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-2xl shadow-xl overflow-hidden",
           userButtonPopoverActionButton: "hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors py-3 w-full text-left",
@@ -70,7 +71,6 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-          {/* <LoadingProvider> */}
         <div className="flex flex-col min-h-screen">
           <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <Header />
@@ -83,7 +83,6 @@ export default function RootLayout({
           <Footer />
           </footer>
         </div>
-        {/* </LoadingProvider> */}
         </ThemeProvider>
       </body>
     </html>
