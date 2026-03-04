@@ -1,7 +1,7 @@
 "use server";
 
 import { getDbConnection } from "./db";
-import { PLAN_LIMITS, UserPlan, UserPlanInfo } from "@/types";
+import { PLAN_LIMITS, PLAN_FILE_SIZE_LIMITS, UserPlan, UserPlanInfo } from "@/types";
 
 async function ensureUsersTable(): Promise<void> {
   const sql = await getDbConnection();
@@ -50,8 +50,9 @@ export async function getUserPlanInfo(userId: string): Promise<UserPlanInfo> {
   const plan = (userRows[0]?.plan as UserPlan) ?? "free";
   const summariesUsed = Number(countRows[0]?.cnt ?? 0);
   const limit = PLAN_LIMITS[plan] ?? PLAN_LIMITS.free;
+  const maxFileSizeMB = PLAN_FILE_SIZE_LIMITS[plan] ?? PLAN_FILE_SIZE_LIMITS.free;
 
-  return { plan, summariesUsed, limit, isOverLimit: summariesUsed >= limit };
+  return { plan, summariesUsed, limit, isOverLimit: summariesUsed >= limit, maxFileSizeMB };
 }
 
 export async function incrementSummaryUsage(_userId: string): Promise<void> {

@@ -63,7 +63,8 @@ export async function generatePdfSummary(uploadResponse: UploadedFile[]) {
         cardData: result.cardData,
       },
     };
-  } catch {
+  } catch (error) {
+    console.error("Error in generatePdfSummary:", error);
     return { success: false, error: "Failed to process the PDF. Please try again.", data: null };
   }
 }
@@ -91,6 +92,7 @@ export async function storePdfSummary(input: StoreSummaryInput) {
     revalidatePath("/dashboard");
     return { success: true, data: { id: saved.id } };
   } catch (error) {
+    console.error("Error in storePdfSummary:", error);
     return {
       success: false,
       message: error instanceof Error ? error.message : "Failed to save summary.",

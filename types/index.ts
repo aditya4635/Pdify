@@ -60,11 +60,18 @@ export interface UserPlanInfo {
   summariesUsed: number;
   limit: number;
   isOverLimit: boolean;
+  maxFileSizeMB: number;
 }
-
 
 export const PLAN_LIMITS: Record<UserPlan, number> = {
   free: 1,
   basic: 5,
   pro: Infinity,
+};
+
+// Maximum file size in MB per plan
+export const PLAN_FILE_SIZE_LIMITS: Record<UserPlan, number> = {
+  free: 4,    // 4 MB for free
+  basic: 10,  // 10 MB for basic
+  pro: 32,    // 32 MB for pro
 };

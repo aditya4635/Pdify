@@ -38,8 +38,10 @@ export default async function UploadPage() {
                 {planInfo.plan === "pro"
                   ? "Pro plan · Unlimited summaries"
                   : `${planInfo.plan.charAt(0).toUpperCase() + planInfo.plan.slice(1)} plan · ${planInfo.summariesUsed} / ${planInfo.limit} summar${planInfo.limit === 1 ? "y" : "ies"} used`}
+                {" · "}
+                <span className="text-zinc-400">{planInfo.maxFileSizeMB}MB max file size</span>
               </p>
-              <UploadForm />
+              <UploadForm maxFileSizeMB={planInfo.maxFileSizeMB} />
             </>
           )}
         </div>
